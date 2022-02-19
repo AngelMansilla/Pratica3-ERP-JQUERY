@@ -221,7 +221,7 @@ let StoreHouse = (function () { //La función anónima devuelve un método getIn
         return this.#stores[this.getStorePosition(shop)].products[this.getProductPosition(product, shop)].stock;
       }
       // Devuelve la relación de todos los productos añadidos en una categoría con sus cantidades en stock. Si pasamos un tipo de producto, el resultado estará filtrado por ese tipo.
-      getCategoryProducts(category, type = Product) { // Si no introducimos tipo se asigna la clase Product
+      getCategoryProducts(category, type = "") { // Si no introducimos tipo se asigna la clase Product
         if (!category) throw new EmptyValueException("category");
         if (this.getCategoryPosition(category) === -1) throw new NotExistException(category);
         let nextIndex = 0;
@@ -229,11 +229,12 @@ let StoreHouse = (function () { //La función anónima devuelve un método getIn
         let array = [];
         this.#stores.forEach(store => {
           store.products.forEach(product => {
-            // if (product instanceof type) { // Comprobamos si es del tipo de producto que queremos
-            if (product.categories.indexOf(category.title) !== -1) { // Comprobamos que tenga esa categoria por el titulo, que es lo que guardamos en el array categories de los productos
-              array.push({ product: product.product, stock: product.stock }); // Pasamos el objeto producto y stock. Así no pasamos la variable categories del producto
+            // Comprobamos si es del tipo de producto que queremos, si es el pordefecto pasa siempre el condicional sino lo filtra segun el tipo.
+            if (type === "" || product.product.type == type) {
+              if (product.categories.indexOf(category.title) !== -1) { // Comprobamos que tenga esa categoria por el titulo, que es lo que guardamos en el array categories de los productos
+                array.push({ product: product.product, stock: product.stock }); // Pasamos el objeto producto y stock. Así no pasamos la variable categories del producto
+              }
             }
-            // }
           });
         });
 
@@ -271,7 +272,7 @@ let StoreHouse = (function () { //La función anónima devuelve un método getIn
         return this.#stores.length; // Devolvemos la nueva cantidad de tienda que tenemos
       }
       // Devuelve la relación de todos los productos añadidos en una tienda con su stock. Si pasamos un tipo de producto, el resultado estará filtrado por ese tipo.
-      getShopProducts(shop, type = Product) {
+      getShopProducts(shop, type = "") {
         if (!shop) throw new EmptyValueException("shop");
         let position = this.getStorePosition(shop);
         if (position === -1) throw new NotExistException(shop);
@@ -279,7 +280,8 @@ let StoreHouse = (function () { //La función anónima devuelve un método getIn
         // referencia para habilitar el closure en el objeto
         let array = [];
         this.#stores[position].products.forEach(product => {
-          if (product.product instanceof type) { // Comprobamos si es del tipo de producto que queremos
+          // Comprobamos si es del tipo de producto que queremos, si es el pordefecto pasa siempre el condicional sino lo filtra segun el tipo.
+          if (type === "" || product.product.type == type) {
             array.push({ product: product.product, stock: product.stock }); // Pasamos el objeto producto y stock. Así no pasamos la variable categories del producto
           }
         });

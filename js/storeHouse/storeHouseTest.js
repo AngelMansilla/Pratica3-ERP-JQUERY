@@ -224,14 +224,25 @@ function testERP() {
     product8 = products8.next();
   }
 
-  console.log("Obtenemos todos los productos de cat1, como hemos borrado ram1 deberíamos obtener el pro2");
+  console.log("Obtenemos todos los productos de cat1, como hemos borrado ram1 deberíamos obtener el pro2. Obtenedremos solo lso de tipo processor");
 
-  let products7 = almacen.getCategoryProducts(cat1);
+  let products7 = almacen.getCategoryProducts(cat1, "processor");
   let product7 = products7.next();
   while (!product7.done) { // Mientras la propiedad "done" no es true.
     console.log(product7.value);
     product7 = products7.next();
   }
+
+  console.log("Obtenemos todas los producto de la store1 que sean del tipo del producto gra1");
+
+  products7 = almacen.getShopProducts(store1, gra1.type);
+  product7 = products7.next();
+  while (!product7.done) { // Mientras la propiedad "done" no es true.
+    console.log(product7.value);
+    product7 = products7.next();
+  }
+
+
 }
 
 window.onload = testERP;
