@@ -1,5 +1,15 @@
 "use strict";
 
+import {
+  BaseException,
+  InvalidAccessConstructorException,
+  EmptyValueException,
+  InvalidValueException,
+  AbstractClassException,
+  NotExistException,
+  ExistException
+} from '../exceptions.js';
+
 class Coords {
   #latitude;
   #longitude;
@@ -29,3 +39,5 @@ class Coords {
 }
 Object.defineProperty(Coords.prototype, "latitude", { enumerable: true });
 Object.defineProperty(Coords.prototype, "longitude", { enumerable: true });
+
+export { Coords };

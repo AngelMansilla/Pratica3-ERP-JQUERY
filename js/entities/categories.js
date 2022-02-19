@@ -1,9 +1,20 @@
 "use strict";
 
+import {
+  BaseException,
+  InvalidAccessConstructorException,
+  EmptyValueException,
+  InvalidValueException,
+  AbstractClassException,
+  NotExistException,
+  ExistException
+} from '../exceptions.js';
+
+
 class Category {
   #title;
   #description;
-  constructor(title = "Default", description) {
+  constructor(title = "Default", description = "") {
     if (!new.target) throw new InvalidAccessConstructorException();
     if (!title) throw new EmptyValueException("title");
     this.#title = title;
@@ -14,7 +25,7 @@ class Category {
   get title() {
     return this.#title;
   }
-  set title(value) {
+  set title(value = "Default") {
     if (!value) throw new EmptyValueException("title");
     this.#title = value;
   }
@@ -22,9 +33,11 @@ class Category {
   get description() {
     return this.#description;
   }
-  set description(value) {
+  set description(value = "") {
     this.#description = value;
   }
 }
 Object.defineProperty(Category.prototype, "title", { enumerable: true });
 Object.defineProperty(Category.prototype, "description", { enumerable: true });
+
+export {Category};

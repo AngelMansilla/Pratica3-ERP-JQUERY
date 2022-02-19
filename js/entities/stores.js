@@ -1,5 +1,17 @@
 "use strict";
 
+import {
+  BaseException,
+  InvalidAccessConstructorException,
+  EmptyValueException,
+  InvalidValueException,
+  AbstractClassException,
+  NotExistException,
+  ExistException
+} from '../exceptions.js';
+
+import { Coords } from './coords.js';
+
 class StoreException extends BaseException {
   constructor(fileName, lineNumber) {
     super("Error: Store Exception.", fileName, lineNumber);
@@ -80,3 +92,6 @@ Object.defineProperty(Store.prototype, "address", { enumerable: true });
 Object.defineProperty(Store.prototype, "phone", { enumerable: true });
 Object.defineProperty(Store.prototype, "coords", { enumerable: true });
 
+export { StoreException, CoordsStoreException };
+export { Store };
+export { Coords } from './coords.js';
