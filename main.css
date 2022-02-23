@@ -1,0 +1,13 @@
+ .bg-4 {
+   background-color: #2f2f2f;
+   color: #fff;
+ }
+
+ .footer {
+   padding-top: 20px;
+   padding-bottom: 20px;
+ }
+
+ #logo {
+   float: left;
+ }

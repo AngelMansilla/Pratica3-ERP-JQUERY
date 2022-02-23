@@ -88,28 +88,24 @@ let StoreHouse = (function () { //La función anónima devuelve un método getIn
 
       //Devuelve un iterator de las categorias
       get categories() {
-        let nextIndex = 0;
-        // referencia para habilitar el closure en el objeto
         let array = this.#categories;
         return {
-          next: function () {
-            return nextIndex < array.length ?
-              { value: array[nextIndex++], done: false } :
-              { done: true };
+          *[Symbol.iterator]() {
+            for (let category of array) {
+              yield category;
+            }
           }
         }
       }
 
       //Devuelve un iterator de las tiendas
       get stores() {
-        let nextIndex = 0;
-        // referencia para habilitar el closure en el objeto
         let array = this.#stores;
         return {
-          next: function () {
-            return nextIndex < array.length ?
-              { value: array[nextIndex++], done: false } :
-              { done: true };
+          *[Symbol.iterator]() {
+            for (let store of array) {
+              yield store;
+            }
           }
         }
       }
@@ -171,14 +167,16 @@ let StoreHouse = (function () { //La función anónima devuelve un método getIn
       }
       // Añade un nuevo producto asociado a una o más categorías.
       // Entiendo que con addProduct añadimos los productos siempre a la tienda por defecto.
-      addProduct(product, category = [this.#categories[0].title]) { // Si no introducimos categoría, seleccionamos por defecto
+      addProduct(product, category = [this.#categories[0]]) { // Si no introducimos categoría, seleccionamos por defecto
         if (!product) throw new EmptyValueException("product"); // product no es null
         //Comprobamos cada categoria si existe
+        let categories = [];
         category.forEach(cat => {
-          if (this.getCategoryPositionByName(cat) === -1) throw new NotExistException(cat); // Comprobamos que exista la categoría
+          if (this.getCategoryPositionByName(cat.title) === -1) throw new NotExistException(cat.title); // Comprobamos que exista la categoría
+          categories.push(cat.title); // Aprovechando el bucle para la excepcion, guardamos solo el nombre de la categoria como clave
         });
         if (this.getProductPosition(product) !== -1) throw new ExistException(product); // El producto ya existe y lanzamos excepción
-        this.#stores[0].products.push({ product: product, categories: category, stock: 1 }); // Añadimos 1 por defectoo
+        this.#stores[0].products.push({ product: product, categories: categories, stock: 1 }); // Añadimos 1 por defectoo
         return this.#stores[0].products.length;
       }
       // Elimina un producto de la tienda por defecto.
@@ -191,17 +189,19 @@ let StoreHouse = (function () { //La función anónima devuelve un método getIn
       // Añade un Product en una tienda con un nº de unidades.
       // En este metodo añadire productos no existentes en una tienda, así el metodo addQuantityProductInShop lo usaremos para añadir sotck en un producto existente en una tienda.
       // También añado la opcion de agregar un array de categorias del producto.
-      addProductInShop(product, shop, category = [this.#categories[0].title]) {
+      addProductInShop(product, shop, category = [this.#categories[0]]) {
         if (!product) throw new EmptyValueException("product"); // product no es null
         // Voy a quitar la excepcion de shop no existe.
         // Es mas util el metodo si podemos añadir productos diferentes a una misma tienda. Siendo poco eficiente tener los productos seprados de una misma tienda.
         if (this.getProductPosition(product, shop) !== -1) throw new ExistException(product); // A la vez que comprobamos si existe el producto comprobamos si existe la tienda
         //Comprobamos cada categoria si existe
+        let categories = [];
         category.forEach(cat => {
-          if (this.getCategoryPositionByName(cat) === -1) throw new NotExistException(cat); // Comprobamos que exista la categoría
+          if (this.getCategoryPositionByName(cat.title) === -1) throw new NotExistException(cat.title); // Comprobamos que exista la categoría
+          categories.push(cat.title); // Aprovechando el bucle para la excepcion, guardamos solo el nombre de la categoria como clave
         });
         this.#stores.push({ store: shop, products: [] });
-        this.#stores[this.getStorePosition(shop)].products.push({ product: product, categories: category, stock: 1 });
+        this.#stores[this.getStorePosition(shop)].products.push({ product: product, categories: categories, stock: 1 });
         return this.#stores.length; // Devolvemos el tamaño del array tiendas
       }
 
@@ -224,8 +224,6 @@ let StoreHouse = (function () { //La función anónima devuelve un método getIn
       getCategoryProducts(category, type = "") { // Si no introducimos tipo se asigna la clase Product
         if (!category) throw new EmptyValueException("category");
         if (this.getCategoryPosition(category) === -1) throw new NotExistException(category);
-        let nextIndex = 0;
-        // referencia para habilitar el closure en el objeto
         let array = [];
         this.#stores.forEach(store => {
           store.products.forEach(product => {
@@ -237,13 +235,12 @@ let StoreHouse = (function () { //La función anónima devuelve un método getIn
             }
           });
         });
-
         // Una vez quet enemos el array de los productos filtrado, retornamos el iterador de estos.
         return {
-          next: function () {
-            return nextIndex < array.length ?
-              { value: array[nextIndex++], done: false } :
-              { done: true };
+          *[Symbol.iterator]() {
+            for (let product of array) {
+              yield product;
+            }
           }
         }
       }
@@ -255,6 +252,7 @@ let StoreHouse = (function () { //La función anónima devuelve un método getIn
         this.#stores.push({ store: shop, products: [] }); // Añadimos la tienda sin productos
         return this.#stores.length;
       }
+
       // Eliminar una tienda. Al eliminar una tienda, los productos de la tienda pasan a la tienda genérica.
       removeShop(shop) {
         if (!shop) throw new EmptyValueException("shop");
@@ -276,8 +274,6 @@ let StoreHouse = (function () { //La función anónima devuelve un método getIn
         if (!shop) throw new EmptyValueException("shop");
         let position = this.getStorePosition(shop);
         if (position === -1) throw new NotExistException(shop);
-        let nextIndex = 0;
-        // referencia para habilitar el closure en el objeto
         let array = [];
         this.#stores[position].products.forEach(product => {
           // Comprobamos si es del tipo de producto que queremos, si es el pordefecto pasa siempre el condicional sino lo filtra segun el tipo.
@@ -286,10 +282,10 @@ let StoreHouse = (function () { //La función anónima devuelve un método getIn
           }
         });
         return {
-          next: function () {
-            return nextIndex < array.length ?
-              { value: array[nextIndex++], done: false } :
-              { done: true };
+          *[Symbol.iterator]() {
+            for (let product of array) {
+              yield product;
+            }
           }
         }
       }

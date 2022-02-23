@@ -146,11 +146,8 @@ function testERP() {
   console.log(almacen);
   console.log(almacen.name);
   console.log("Categorias del almacen");
-  let categories = almacen.categories;
-  let category = categories.next();
-  while (!category.done) { // Mientras la propiedad "done" no es true.
-    console.log(category.value);
-    category = categories.next();
+  for (const category of almacen.categories) {
+    console.log(category);
   }
 
   console.log("***Metodos categorias***");
@@ -160,12 +157,10 @@ function testERP() {
   almacen.addCategory(pilas);
   console.log("Eliminamos la categoria pilas");
   almacen.removeCategory(pilas);
-  let categories1 = almacen.categories;
-  let category1 = categories1.next();
-  while (!category1.done) { // Mientras la propiedad "done" no es true.
-    console.log(category1.value);
-    category1 = categories1.next();
+  for (const category of almacen.categories) {
+    console.log(category);
   }
+
   console.log("***Metodos productos***");
   console.log("Añadimos productos: procesador y grafica");
   almacen.addProduct(pro1);
@@ -173,12 +168,11 @@ function testERP() {
   console.log("Eliminamos la grafica");
   almacen.removeProduct(gra1);
   console.log("Mostramos los productos de la tienda default");
-  let products4 = almacen.getShopProducts(new Store("XXXX", "Default", "Default", "0", new Coords(1, 1)));
-  let product4 = products4.next();
-  while (!product4.done) { // Mientras la propiedad "done" no es true.
-    console.log(product4.value);
-    product4 = products4.next();
+  let products = almacen.getShopProducts(new Store("XXXX", "Default", "Default", "0", new Coords(1, 1)));
+  for (const product of products) {
+    console.log(product);
   }
+
   console.log("añadimos tiendas");
   almacen.addShop(store1);
   let store2 = new Store("12322332", "Intel", "Plaza mayor, 1, Madrid, España", "685723102", new Coords(143, 1542));
@@ -186,63 +180,51 @@ function testERP() {
   console.log("eleminamos una");
   almacen.removeShop(store2);
   console.log("Tiendas del almacen");
-  let stores = almacen.stores;
-  let store = stores.next();
-  while (!store.done) { // Mientras la propiedad "done" no es true.
-    console.log(store.value);
-    store = stores.next();
+  for (const store of almacen.stores) {
+    console.log(store);
   }
+
   // Testear metodos:  getCategoryProducts
-
   console.log("Comprobamos que añadimos el producto ram 1 a la store1")
-  almacen.addProductInShop(ram1, store1, [cat1.title]);
+  almacen.addProductInShop(ram1, store1, [cat1]);
 
-  let products5 = almacen.getShopProducts(store1);
-  let product5 = products5.next();
-  while (!product5.done) { // Mientras la propiedad "done" no es true.
-    console.log(product5.value);
-    product5 = products5.next();
+  products = almacen.getShopProducts(store1);
+  for (const product of products) {
+    console.log(product);
   }
 
   almacen.addQuantityProductInShop(ram1, store1);
 
-  let products6 = almacen.getShopProducts(store1);
-  let product6 = products6.next();
-  while (!product6.done) { // Mientras la propiedad "done" no es true.
-    console.log(product6.value);
-    product6 = products6.next();
+  products = almacen.getShopProducts(store1);
+  for (const product of products) {
+    console.log(product);
   }
+
   console.log("Borramos la ram1 de la store1, añadimos pro2 y añadimos gra1 en categoria default");
-  almacen.addProductInShop(pro2, store1, [cat1.title]);
+  almacen.addProductInShop(pro2, store1, [cat1]);
   almacen.addProductInShop(gra1, store1);
   almacen.removeProductInShop(ram1, store1);
 
-  let products8 = almacen.getShopProducts(store1);
-  let product8 = products8.next();
-  while (!product8.done) { // Mientras la propiedad "done" no es true.
-    console.log(product8.value);
-    product8 = products8.next();
+  products = almacen.getShopProducts(store1);
+  for (const product of products) {
+    console.log(product);
   }
 
   console.log("Obtenemos todos los productos de cat1, como hemos borrado ram1 deberíamos obtener el pro2. Obtenedremos solo lso de tipo processor");
 
-  let products7 = almacen.getCategoryProducts(cat1, "processor");
-  let product7 = products7.next();
-  while (!product7.done) { // Mientras la propiedad "done" no es true.
-    console.log(product7.value);
-    product7 = products7.next();
+  products = almacen.getCategoryProducts(cat1, "processor");
+  for (const product of products) {
+    console.log(product);
   }
 
   console.log("Obtenemos todas los producto de la store1 que sean del tipo del producto gra1");
 
-  products7 = almacen.getShopProducts(store1, gra1.type);
-  product7 = products7.next();
-  while (!product7.done) { // Mientras la propiedad "done" no es true.
-    console.log(product7.value);
-    product7 = products7.next();
+  products = almacen.getShopProducts(store1, gra1.type);
+  for (const product of products) {
+    console.log(product);
   }
 
 
 }
 
-window.onload = testERP;
+export { testERP };
