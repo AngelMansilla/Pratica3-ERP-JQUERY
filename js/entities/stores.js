@@ -32,7 +32,7 @@ class Store {
   #address;
   #phone;
   #coords;
-  constructor(CIF = "XXXX", name = "Default", address, phone, coords) {
+  constructor(CIF, name, address, phone, coords) {
     if (!new.target) throw new InvalidAccessConstructorException();
     // Considero que el CIF no puede ser vacio igual que el nombre
     if (!CIF) throw new EmptyValueException("CIF");

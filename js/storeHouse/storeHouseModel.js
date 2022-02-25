@@ -65,9 +65,9 @@ let StoreHouse = (function () { //La función anónima devuelve un método getIn
   function init(name) {//Inicialización del Singleton
     class StoreHouse {
       #name;
-      #categories = [new Category]; // Inicializamos con una categoria por defecto
+      #categories = []; // Inicializamos con una categoria por defecto
       #stores = [{
-        store: new Store("XXXX", "Default", "Default", "0", new Coords(1, 1)),
+        store: new Store("XXXX", "HouseStore", "Default", "0", new Coords(1, 1)),
         products: []
       }]; // Inicializamos con una tienda por defecto
 
@@ -108,6 +108,42 @@ let StoreHouse = (function () { //La función anónima devuelve un método getIn
             }
           }
         }
+      }
+      //Devolvemos la tienda que tiene ese nombre
+      getStore(name) {
+        let shop;
+        this.#stores.forEach(store => {
+          if (store.store.name === name) {
+            shop = store.store;
+          }
+        });
+        if (!shop) throw new NotExistException(name);
+        return shop;
+      }
+      //Devolvemos la categoria que tiene ese titulo
+      getCategory(title) {
+        let categorySelect;
+        this.#categories.forEach(category => {
+          if (category.title === title) {
+            categorySelect = category;
+          }
+        });
+        if (!categorySelect) throw new NotExistException(title);
+        return categorySelect;
+      }
+
+      //Devolvemos un producto por el SerialNumber
+      getProduct(serial) {
+        let producSelect;
+        this.#stores.forEach(store => {
+          store.products.forEach(product => {
+            if ((product.product.serialNumber == serial)) {
+              producSelect = product;
+            }
+          })
+        });
+        if (!producSelect) throw new NotExistException(serial);
+        return producSelect;
       }
 
       //Dado una categoria, devuelve la posición de esa categoria o -1 si no la encontramos.
@@ -200,7 +236,6 @@ let StoreHouse = (function () { //La función anónima devuelve un método getIn
           if (this.getCategoryPositionByName(cat.title) === -1) throw new NotExistException(cat.title); // Comprobamos que exista la categoría
           categories.push(cat.title); // Aprovechando el bucle para la excepcion, guardamos solo el nombre de la categoria como clave
         });
-        this.#stores.push({ store: shop, products: [] });
         this.#stores[this.getStorePosition(shop)].products.push({ product: product, categories: categories, stock: 1 });
         return this.#stores.length; // Devolvemos el tamaño del array tiendas
       }
@@ -228,7 +263,7 @@ let StoreHouse = (function () { //La función anónima devuelve un método getIn
         this.#stores.forEach(store => {
           store.products.forEach(product => {
             // Comprobamos si es del tipo de producto que queremos, si es el pordefecto pasa siempre el condicional sino lo filtra segun el tipo.
-            if (type === "" || product.product.type == type) {
+            if (type == "" || product.product.constructor.name == type) {
               if (product.categories.indexOf(category.title) !== -1) { // Comprobamos que tenga esa categoria por el titulo, que es lo que guardamos en el array categories de los productos
                 array.push({ product: product.product, stock: product.stock }); // Pasamos el objeto producto y stock. Así no pasamos la variable categories del producto
               }
@@ -276,8 +311,8 @@ let StoreHouse = (function () { //La función anónima devuelve un método getIn
         if (position === -1) throw new NotExistException(shop);
         let array = [];
         this.#stores[position].products.forEach(product => {
-          // Comprobamos si es del tipo de producto que queremos, si es el pordefecto pasa siempre el condicional sino lo filtra segun el tipo.
-          if (type === "" || product.product.type == type) {
+          // Comprobamos si es del tipo de producto que queremos, si es el por defecto pasa siempre el condicional sino lo filtra segun el tipo.
+          if (type == "" || product.product.constructor.name == type) {
             array.push({ product: product.product, stock: product.stock }); // Pasamos el objeto producto y stock. Así no pasamos la variable categories del producto
           }
         });
@@ -289,6 +324,56 @@ let StoreHouse = (function () { //La función anónima devuelve un método getIn
           }
         }
       }
+      // Devuelve las categorias de una tienda
+      getShopCategories(shop) {
+        if (!shop) throw new EmptyValueException("shop");
+        let position = this.getStorePosition(shop);
+        if (position === -1) throw new NotExistException(shop);
+        let array = [];
+        this.#stores[position].products.forEach(product => {
+          product.categories.forEach(title => {
+            this.#categories.forEach(category => {
+              if (category.title == title) {
+                if (!(array.includes(category))) {
+                  array.push(category);
+                }
+              }
+            })
+          })
+        });
+        return {
+          *[Symbol.iterator]() {
+            for (let product of array) {
+              yield product;
+            }
+          }
+        }
+      }
+
+      //Devuelve los productos de una categoria dentro de una tienda
+      getShowCategoryProducts(shop, category, type = "") {
+        if (!shop) throw new EmptyValueException("shop");
+        let position = this.getStorePosition(shop);
+        if (position === -1) throw new NotExistException(shop);
+        if (!category) throw new EmptyValueException("category");
+        if (this.getCategoryPosition(category) === -1) throw new NotExistException(category);
+        let array = [];
+        this.#stores[position].products.forEach(product => {
+          if (product.categories.includes(category.title)) {
+            if (type == "" || product.product.constructor.name == type) {
+              array.push(product);
+            }
+          }
+        });
+        return {
+          *[Symbol.iterator]() {
+            for (let product of array) {
+              yield product;
+            }
+          }
+        }
+      }
+
     }
     Object.defineProperty(StoreHouse.prototype, "name", { enumerable: true });
     Object.defineProperty(StoreHouse.prototype, "categories", { enumerable: true });

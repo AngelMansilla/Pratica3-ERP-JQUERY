@@ -6,8 +6,32 @@
  .footer {
    padding-top: 20px;
    padding-bottom: 20px;
+   display: flex;
+   justify-content: space-around;
  }
 
  #logo {
    float: left;
  }
+
+ #collapsibleNavbar {
+   margin-right: 10%;
+ }
+
+ .stores {
+   display: flex;
+   justify-content: space-around;
+ }
+
+ img {
+   height: 200px;
+   width: 200px;
+ }
+
+.main__header{
+  display:flex;
+  justify-content: space-between;
+  margin-left: 10%;
+  margin-right: 10%;
+  margin-top:2%;
+}

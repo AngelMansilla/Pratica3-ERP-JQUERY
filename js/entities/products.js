@@ -101,7 +101,7 @@ class Product {
 }
 Object.defineProperty(Product.prototype, "serialNumber", { enumerable: true });
 Object.defineProperty(Product.prototype, "name", { enumerable: true });
-Object.defineProperty(Product.prototype, "description", { enumerable: true, writable: true });
+Object.defineProperty(Product.prototype, "description", { enumerable: true});
 Object.defineProperty(Product.prototype, "price", { enumerable: true });
 Object.defineProperty(Product.prototype, "tax", { enumerable: true });
 Object.defineProperty(Product.prototype, "images", { enumerable: true });
